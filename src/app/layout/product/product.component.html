@@ -1,0 +1,340 @@
+<div class="fixedAlert">
+	<div *ngFor="let eachAlert of alertArray">
+		<div class="alert alert-success" *ngIf="eachAlert['type'] =='success'">{{eachAlert['msg']}}</div>
+		<div class="alert alert-danger" *ngIf="eachAlert['type'] =='error'">{{eachAlert['msg']}}</div>
+	</div>
+</div>
+
+
+
+<div class="row" >
+	<div class="col-xl-12">
+		<h2 class="page-header">
+			Product
+		</h2>
+		<ol class="breadcrumb">
+			<li class="breadcrumb-item">
+				<i class="fa fa-dashboard"></i>&nbsp; <a href="Javascript:void(0)" [routerLink]="['/dashboard']">Dashboard</a>
+			</li>
+			<li class="breadcrumb-item active" *ngIf="activateLanguagePanel">
+				<a href="Javascript:void(0)" [routerLink]="['/product']" (click)="backToListing()">Product</a>
+			</li>
+			<li class="breadcrumb-item active" *ngIf="activateLanguagePanel"><i class="fa {{icon}}"></i> Product Details</li>
+			<li class="breadcrumb-item active" *ngIf="!activateLanguagePanel"><i class="fa {{icon}}"></i> Product</li>
+		</ol>
+	</div>
+</div>
+
+
+<div class="row mt-3" *ngIf="activateLanguagePanel">
+    <div class="col-sm-12">
+        <div class="card">
+            <div class="card-header">Product Details</div>
+            <div class="card-body">
+                <ngb-tabset>
+                    <ngb-tab title="English">
+                        <ng-template ngbTabContent>
+							<div style="margin-top:10px">								
+								<div class="col col-xl-12 col-lg-12">
+									<ckeditor [(ngModel)]="formValue['productDesctiption']['English']" ></ckeditor>
+								</div>								
+							</div>
+                        </ng-template>
+                    </ngb-tab>
+                    <ngb-tab>
+                        <ng-template ngbTabTitle>বাংলা</ng-template>
+                        <ng-template ngbTabContent>
+							<div style="margin-top:10px">								
+								<ckeditor  [(ngModel)]="formValue['productDesctiption']['Bengali']"></ckeditor>
+							</div>
+                        </ng-template>
+                    </ngb-tab>   
+					<ngb-tab>
+                        <ng-template ngbTabTitle>हिंदी</ng-template>
+                        <ng-template ngbTabContent>
+							<div style="margin-top:10px">
+								<ckeditor  [(ngModel)]="formValue['productDesctiption']['Hindi']"></ckeditor>
+							</div>
+                        </ng-template>
+                    </ngb-tab> 
+                </ngb-tabset>
+            </div>
+        </div>
+    </div>
+    
+</div>
+
+
+<div class="row" *ngIf="!activateLanguagePanel">
+	<div class="col col-xl-12 col-lg-12">
+		<div class="card mb-3">
+                <div class="card-header">
+					All Product 
+					<button (click)="open(addForm,0,'add')" class="btn btn-primary" style="float:right; margin-right:5px;"><i class="fa fa-plus"></i>&nbsp; Add Product</button>
+				</div>
+                <div class="card-body table-responsive">
+                    <table class="table table-hover table-striped">
+                        <thead>
+                        <tr>
+                            <th>Product Name</th>
+                            <th>Location</th>                           
+                            <th>Price</th>                           
+                            <th>Operation</th>                           
+                        </tr>
+                        </thead>
+                        <tbody>
+                        <tr *ngFor="let record of records">
+                            <td>{{record['productName']}}</td>
+                            <td>
+								<span *ngIf="record['onSale']==1"><span style="text-decoration: line-through;">{{record['price']}}</span> {{record['salePrice']}}</span>
+								<span *ngIf="record['onSale']==0">{{record['price']}}</span>
+							</td>
+                            <td>{{record['categoryLocation']}}</td>
+                            <td width="175">							
+								<button type="button" class="btn btn-danger" (click)="open(activeInactiveForm,record['productID'],'changeStatus',1)" *ngIf="record['active']=='0'"> <i class="fa fa-close"></i></button>
+								<button type="button" class="btn btn-success" (click)="open(activeInactiveForm,record['productID'],'changeStatus',0)" *ngIf="record['active']=='1'"><i class="fa fa-check"></i></button>
+								&nbsp;
+								<button type="button" class="btn btn-success" (click)="open(editForm, record,'edit')"> <i class="fa fa-pencil"></i></button>
+								&nbsp;
+								<button type="button" class="btn btn-danger" (click)="open(deleteForm, record['productID'],'delete')"> <i class="fa fa-trash"></i></button>
+							</td>
+                        </tr>                                     
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+	</div>
+</div>
+<ng-template #addForm let-c="close" let-d="dismiss">
+	<form role="form">
+		<div class="modal-header">
+			<h4 class="modal-title">Add Product</h4>
+			<button type="button" class="close" aria-label="Close" (click)="d('Cross click')"
+				[disabled]="submittingForm">
+				<span aria-hidden="true">&times;</span>
+			</button>
+		</div>
+		<div class="modal-body">
+			<div class="form-content">
+				<table width="100%" cellpadding="10" cellspacing="0">					
+					<tr>
+						<td class="noWrap" width="55" valign="top" class="smallText"><b>Product Name</b></td>
+						<td>
+							<input type="text" class="form-control" name="product" [(ngModel)]="formValue['productName']" autocomplete="off">
+							<div class="error">{{validationError['productName']}}</div>
+						</td>
+					</tr>
+					<tr>
+						<td class="noWrap" width="100" valign="top" class="smallText"><b>Category</b></td>
+						<td>
+							<select class="form-control" name="sub-product" [(ngModel)]="formValue['categoryID']" >
+								<option value=''>Select</option>
+								<option *ngFor="let record of recordsCategory" value="{{record['categoryID']}}">{{record['location']}}</option>
+							</select>							
+							<div class="error">{{validationError['categoryID']}}</div>
+						</td>
+					</tr>	
+					<tr>
+						<td class="noWrap" valign="top" class="smallText"><b>Price</b></td>
+						<td>
+							<input type="text" class="form-control" name="price" [(ngModel)]="formValue['price']" autocomplete="off">						
+							<div class="error">{{validationError['price']}}</div>
+						</td>
+					</tr>
+					<tr>
+						<td class="noWrap" valign="top" class="smallText"><b>URL</b></td>
+						<td>
+							<input type="text" class="form-control" name="URL" [(ngModel)]="formValue['URL']" autocomplete="off">						
+							<div class="error">{{validationError['URL']}}</div>
+						</td>
+					</tr>					
+					<tr>
+						<td class="noWrap" valign="top" class="smallText"><b>Meta Tags</b></td>
+						<td>
+							<input type="text" class="form-control" name="metaTag" [(ngModel)]="formValue['metaTag']" autocomplete="off">						
+							<div class="error">{{validationError['metaTag']}}</div>
+						</td>
+					</tr>
+					<tr>
+						<td class="noWrap" valign="top" class="smallText"><b>Meta Description</b></td>
+						<td>
+							<textarea class="form-control" name="metaDescription" [(ngModel)]="formValue['metaDescription']"></textarea>						
+							<div class="error">{{validationError['metaDescription']}}</div>
+						</td>
+					</tr>
+					<tr>
+						<td class="noWrap" valign="top" class="smallText"><b>onSale?</b></td>
+						<td>
+							<input type="checkbox" name="metaDescription" [(ngModel)]="formValue['onSale']" />						
+							<div class="error">{{validationError['onSale']}}</div>
+						</td>
+					</tr>
+					<tr *ngIf="formValue['onSale']==true">
+						<td class="noWrap" valign="top" class="smallText"><b>Sale Price</b></td>
+						<td>
+							<input type="text" class="form-control" name="salePrice" [(ngModel)]="formValue['salePrice']" autocomplete="off">						
+							<div class="error">{{validationError['salePrice']}}</div>
+						</td>
+					</tr>
+					<tr>
+						<td class="noWrap" valign="top" class="smallText"><b>Is featured?</b></td>
+						<td>
+							<input type="checkbox" name="metaDescription" [(ngModel)]="formValue['isFeatured']" />						
+							<div class="error">{{validationError['isFeatured']}}</div>
+						</td>
+					</tr>					
+				</table>				
+			</div>
+		</div>
+		<div class="modal-footer">
+			<button type="button" class="btn btn-danger" (click)="c('Close click')" [disabled]="submittingForm">Close</button>
+			<button type="button" class="btn btn-success" (click)="add()" [disabled]="submittingForm"> 
+				<i class="fa fa-circle-o-notch fa-spin" *ngIf="submittingForm"></i> 
+				<span  *ngIf="submittingForm">&nbsp;Please wait...</span> 
+				<span  *ngIf="!submittingForm">Add Product</span> 				
+			</button>
+		</div>
+	</form>
+</ng-template>
+
+
+
+<ng-template #deleteForm let-c="close" let-d="dismiss">
+	<form role="form">
+		<div class="modal-header">
+			<h4 class="modal-title">{{header}}</h4>
+			<button type="button" class="close" aria-label="Close" (click)="d('Cross click')"
+				[disabled]="submittingForm">
+				<span aria-hidden="true">&times;</span>
+			</button>
+		</div>		
+		<div class="modal-footer">
+			<button type="button" class="btn btn-danger" (click)="c('Close click')" [disabled]="submittingForm">No</button>
+			<button type="button" class="btn btn-success" (click)="delete()" [disabled]="submittingForm"> 
+				<i class="fa fa-circle-o-notch fa-spin" *ngIf="submittingForm"></i> 
+				<span  *ngIf="submittingForm">&nbsp;Please wait...</span> 
+				<span  *ngIf="!submittingForm">
+					<span>Delete</span> 					
+				</span> 				
+			</button>
+		</div>
+	</form>
+</ng-template>
+
+
+<ng-template #activeInactiveForm let-c="close" let-d="dismiss">
+	<form role="form">
+		<div class="modal-header">
+			<h4 class="modal-title">{{header}}</h4>
+			<button type="button" class="close" aria-label="Close" (click)="d('Cross click')"
+				[disabled]="submittingForm">
+				<span aria-hidden="true">&times;</span>
+			</button>
+		</div>		
+		<div class="modal-footer">
+			<button type="button" class="btn btn-danger" (click)="c('Close click')" [disabled]="submittingForm">No</button>
+			<button type="button" class="btn btn-success" (click)="changeStatus()" [disabled]="submittingForm"> 
+				<i class="fa fa-circle-o-notch fa-spin" *ngIf="submittingForm"></i> 
+				<span  *ngIf="submittingForm">&nbsp;Please wait...</span> 
+				<span  *ngIf="!submittingForm">
+					<span *ngIf="newStatus">Activate</span> 
+					<span *ngIf="!newStatus">In-Activate</span> 
+				</span> 				
+			</button>
+		</div>
+	</form>
+</ng-template>
+
+
+
+<ng-template #editForm let-c="close" let-d="dismiss">
+	<form role="form">
+		<div class="modal-header">
+			<h4 class="modal-title">Edit Product</h4>
+			<button type="button" class="close" aria-label="Close" (click)="d('Cross click')"
+				[disabled]="submittingForm">
+				<span aria-hidden="true">&times;</span>
+			</button>
+		</div>
+		<div class="modal-body">
+			<div class="form-content">
+				<table width="100%" cellpadding="10" cellspacing="0">					
+					<tr>
+						<td class="noWrap" width="55" valign="top" class="smallText"><b>Product Name</b></td>
+						<td>
+							<input type="text" class="form-control" name="product" [(ngModel)]="formValue['productName']" autocomplete="off">
+							<div class="error">{{validationError['productName']}}</div>
+						</td>
+					</tr>
+					<tr>
+						<td class="noWrap" width="100" valign="top" class="smallText"><b>Category</b></td>
+						<td>
+							<select class="form-control" name="sub-product" [(ngModel)]="formValue['categoryID']" >
+								<option value=''>Select</option>
+								<option *ngFor="let record of recordsCategory" value="{{record['categoryID']}}">{{record['location']}}</option>
+							</select>							
+							<div class="error">{{validationError['categoryID']}}</div>
+						</td>
+					</tr>	
+					<tr>
+						<td class="noWrap" valign="top" class="smallText"><b>Price</b></td>
+						<td>
+							<input type="text" class="form-control" name="price" [(ngModel)]="formValue['price']" autocomplete="off">						
+							<div class="error">{{validationError['price']}}</div>
+						</td>
+					</tr>
+					<tr>
+						<td class="noWrap" valign="top" class="smallText"><b>URL</b></td>
+						<td>
+							<input type="text" class="form-control" name="URL" [(ngModel)]="formValue['URL']" autocomplete="off">						
+							<div class="error">{{validationError['URL']}}</div>
+						</td>
+					</tr>					
+					<tr>
+						<td class="noWrap" valign="top" class="smallText"><b>Meta Tags</b></td>
+						<td>
+							<input type="text" class="form-control" name="metaTag" [(ngModel)]="formValue['metaTag']" autocomplete="off">						
+							<div class="error">{{validationError['metaTag']}}</div>
+						</td>
+					</tr>
+					<tr>
+						<td class="noWrap" valign="top" class="smallText"><b>Meta Description</b></td>
+						<td>
+							<textarea class="form-control" name="metaDescription" [(ngModel)]="formValue['metaDescription']" ></textarea>						
+							<div class="error">{{validationError['metaDescription']}}</div>
+						</td>
+					</tr>
+					<tr>
+						<td class="noWrap" valign="top" class="smallText"><b>onSale?</b></td>
+						<td>
+							<input type="checkbox" name="onSale" [(ngModel)]="formValue['onSale']" />						
+							<div class="error">{{validationError['onSale']}}</div>
+						</td>
+					</tr>
+					<tr *ngIf="formValue['onSale']==true">
+						<td class="noWrap" valign="top" class="smallText"><b>Sale Price</b></td>
+						<td>
+							<input type="text" class="form-control" name="salePrice" [(ngModel)]="formValue['salePrice']" autocomplete="off">						
+							<div class="error">{{validationError['salePrice']}}</div>
+						</td>
+					</tr>
+					<tr>
+						<td class="noWrap" valign="top" class="smallText"><b>Is featured?</b></td>
+						<td>
+							<input type="checkbox" name="isFeatured" [(ngModel)]="formValue['isFeatured']" />						
+							<div class="error">{{validationError['isFeatured']}}</div>
+						</td>
+					</tr>					
+				</table>				
+			</div>
+		</div>
+		<div class="modal-footer">
+			<button type="button" class="btn btn-danger" (click)="c('Close click')" [disabled]="submittingForm">Close</button>
+			<button type="button" class="btn btn-success" (click)="update()" [disabled]="submittingForm"> 
+				<i class="fa fa-circle-o-notch fa-spin" *ngIf="submittingForm"></i> 
+				<span  *ngIf="submittingForm">&nbsp;Please wait...</span> 
+				<span  *ngIf="!submittingForm">Next >></span> 				
+			</button>
+		</div>
+	</form>
+</ng-template>

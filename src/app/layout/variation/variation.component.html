@@ -1,0 +1,181 @@
+<div class="fixedAlert">
+	<div *ngFor="let eachAlert of alertArray">
+		<div class="alert alert-success" *ngIf="eachAlert['type'] =='success'">{{eachAlert['msg']}}</div>
+		<div class="alert alert-danger" *ngIf="eachAlert['type'] =='error'">{{eachAlert['msg']}}</div>
+	</div>
+</div>
+
+<div class="row">
+	<div class="col-xl-12">
+		<h2 class="page-header">
+			Product Variation
+		</h2>
+		<ol class="breadcrumb">
+			<li class="breadcrumb-item">
+				<i class="fa fa-dashboard"></i>&nbsp;<a href="Javascript:void(0)" [routerLink]="['/dashboard']">Dashboard</a>
+			</li>
+			<li class="breadcrumb-item active"><i class="fa {{icon}}"></i> Product Variation </li>
+		</ol>
+	</div>
+</div>
+
+<div class="row">
+	<div class="col col-xl-12 col-lg-12">
+		<div class="card mb-3">
+                <div class="card-header">
+					All Variation 
+					<button (click)="open(addForm,0,'add')" class="btn btn-primary" style="float:right; margin-right:5px;"><i class="fa fa-plus"></i>&nbsp; Add Variation</button>
+				</div>
+                <div class="card-body table-responsive">
+                    <table class="table table-hover table-striped">
+                        <thead>
+                        <tr>
+                            <th>Variation Text</th>
+                            <th>Variations</th>                           
+                            <th>Operation</th>                           
+                        </tr>
+                        </thead>
+                        <tbody>
+                        <tr *ngFor="let record of records">
+                            <td>{{record['variationText']}}</td>
+                            <td>{{record['variation']}}</td>
+                            <td width="175">							
+								<button type="button" class="btn btn-danger" (click)="open(activeInactiveForm,record['variationID'],'changeStatus',1)" *ngIf="record['active']=='0'"> <i class="fa fa-close"></i></button>
+								<button type="button" class="btn btn-success"  (click)="open(activeInactiveForm,record['variationID'],'changeStatus',0)" *ngIf="record['active']=='1'"> <i class="fa fa-check"></i></button>
+								&nbsp;
+								<button type="button" class="btn btn-success" (click)="open(editForm, record,'edit')"> <i class="fa fa-pencil"></i></button>
+								&nbsp;
+								<button type="button" class="btn btn-danger" (click)="open(deleteForm, record['variationID'],'delete')"> <i class="fa fa-trash"></i></button>
+							</td>
+                        </tr>                                     
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+	</div>
+</div>
+<ng-template #addForm let-c="close" let-d="dismiss">
+	<form role="form">
+		<div class="modal-header">
+			<h4 class="modal-title">Add Variation</h4>
+			<button type="button" class="close" aria-label="Close" (click)="d('Cross click')"
+				[disabled]="submittingForm">
+				<span aria-hidden="true">&times;</span>
+			</button>
+		</div>
+		<div class="modal-body">
+			<div class="form-content">
+				<table width="100%" cellpadding="10" cellspacing="0">					
+					<tr>
+						<td class="noWrap" width="55" valign="top" class="smallText"><b>Variation Name</b></td>
+						<td>
+							<input type="text" class="form-control" name="variation" [(ngModel)]="formValue['variationName']" autocomplete="off">
+							<div class="error">{{validationError['variationName']}}</div>
+						</td>
+					</tr>
+					<tr>
+						<td class="noWrap" width="100" valign="top" class="smallText"><b>Sub-variation</b></td>
+						<td>
+							<select class="form-control" name="sub-variation" [(ngModel)]="formValue['parentVariationID']" >
+								<option value=''>Select</option>
+								<option *ngFor="let record of records" value="{{record['variationID']}}">{{record['location']}}</option>
+							</select>							
+						</td>
+					</tr>					
+				</table>				
+			</div>
+		</div>
+		<div class="modal-footer">
+			<button type="button" class="btn btn-danger" (click)="c('Close click')" [disabled]="submittingForm">Close</button>
+			<button type="button" class="btn btn-success" (click)="add()" [disabled]="submittingForm"> 
+				<i class="fa fa-circle-o-notch fa-spin" *ngIf="submittingForm"></i> 
+				<span  *ngIf="submittingForm">&nbsp;Please wait...</span> 
+				<span  *ngIf="!submittingForm">Add Variation</span> 				
+			</button>
+		</div>
+	</form>
+</ng-template>
+
+
+
+<ng-template #deleteForm let-c="close" let-d="dismiss">
+	<form role="form">
+		<div class="modal-header">
+			<h4 class="modal-title">{{header}}</h4>
+			<button type="button" class="close" aria-label="Close" (click)="d('Cross click')"
+				[disabled]="submittingForm">
+				<span aria-hidden="true">&times;</span>
+			</button>
+		</div>		
+		<div class="modal-footer">
+			<button type="button" class="btn btn-danger" (click)="c('Close click')" [disabled]="submittingForm">No</button>
+			<button type="button" class="btn btn-success" (click)="delete()" [disabled]="submittingForm"> 
+				<i class="fa fa-circle-o-notch fa-spin" *ngIf="submittingForm"></i> 
+				<span  *ngIf="submittingForm">&nbsp;Please wait...</span> 
+				<span  *ngIf="!submittingForm">
+					<span>Delete</span> 					
+				</span> 				
+			</button>
+		</div>
+	</form>
+</ng-template>
+
+
+<ng-template #activeInactiveForm let-c="close" let-d="dismiss">
+	<form role="form">
+		<div class="modal-header">
+			<h4 class="modal-title">{{header}}</h4>
+			<button type="button" class="close" aria-label="Close" (click)="d('Cross click')"
+				[disabled]="submittingForm">
+				<span aria-hidden="true">&times;</span>
+			</button>
+		</div>		
+		<div class="modal-footer">
+			<button type="button" class="btn btn-danger" (click)="c('Close click')" [disabled]="submittingForm">No</button>
+			<button type="button" class="btn btn-success" (click)="changeStatus()" [disabled]="submittingForm"> 
+				<i class="fa fa-circle-o-notch fa-spin" *ngIf="submittingForm"></i> 
+				<span  *ngIf="submittingForm">&nbsp;Please wait...</span> 
+				<span  *ngIf="!submittingForm">
+					<span *ngIf="newStatus">Activate</span> 
+					<span *ngIf="!newStatus">In-Activate</span> 
+				</span> 				
+			</button>
+		</div>
+	</form>
+</ng-template>
+
+
+
+<ng-template #editForm let-c="close" let-d="dismiss">
+	<form role="form">
+		<div class="modal-header">
+			<h4 class="modal-title">Edit Variation</h4>
+			<button type="button" class="close" aria-label="Close" (click)="d('Cross click')"
+				[disabled]="submittingForm">
+				<span aria-hidden="true">&times;</span>
+			</button>
+		</div>
+		<div class="modal-body">
+			<div class="form-content">
+				<table width="100%" cellpadding="10" cellspacing="0">					
+					<tr>
+						<td class="noWrap" width="55" valign="top" class="smallText"><b>Variation Text</b></td>
+						<td>
+							<input type="text" class="form-control" name="variationText" [(ngModel)]="formValue['variationText']" autocomplete="off">
+							<div class="error">{{validationError['variationText']}}</div>
+						</td>
+					</tr>
+								
+				</table>				
+			</div>
+		</div>
+		<div class="modal-footer">
+			<button type="button" class="btn btn-danger" (click)="c('Close click')" [disabled]="submittingForm">Close</button>
+			<button type="button" class="btn btn-success" (click)="update()" [disabled]="submittingForm"> 
+				<i class="fa fa-circle-o-notch fa-spin" *ngIf="submittingForm"></i> 
+				<span  *ngIf="submittingForm">&nbsp;Please wait...</span> 
+				<span  *ngIf="!submittingForm">Update Variation</span> 				
+			</button>
+		</div>
+	</form>
+</ng-template>

@@ -1,0 +1,32 @@
+/* You can add global styles to this file, and also import other style files */
+@import "bootstrap/bootstrap";
+@import "spinner";
+@import "utils";
+@import "rtl";
+@import "responsive";
+
+@media print {
+    .breadcrumb {
+        display: none !important;
+    }
+}
+
+
+.smallText{
+	font-size:12px;
+	margin-top:10px;
+	float:left;
+	white-space: nowrap;
+}
+
+.error{
+	color:#f00;
+	font-size:12px;
+}
+
+.fixedAlert{
+	position:fixed; 
+	z-index:9999; 
+	bottom:0;
+	right:0;
+}
